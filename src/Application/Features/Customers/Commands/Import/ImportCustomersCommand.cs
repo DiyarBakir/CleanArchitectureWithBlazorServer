@@ -46,13 +46,14 @@ namespace CleanArchitecture.Blazor.Application.Features.Customers.Commands.Impor
         }
         public async Task<Result> Handle(ImportCustomersCommand request, CancellationToken cancellationToken)
         {
-           var result = await _excelService.ImportAsync(request.Data, mappers: new Dictionary<string, Func<DataRow, CustomerDto, object>>
+
+           var result = await _excelService.ImportAsync(request.Data, mappers: new Dictionary<string, Func<DataRow, CustomerDto, object?>> 
             {
                 { _localizer["Name"], (row,item) => item.Name = row[_localizer["Name"]]?.ToString() },
                 { _localizer["Description"], (row,item) => item.Description = row[_localizer["Description"]]?.ToString() },
             }, _localizer["Customers"]);
-           
-            if (result.Succeeded)
+
+            if (result.Succeeded && result.Data is not null) 
             {
                 foreach (var dto in result.Data)
                 {
